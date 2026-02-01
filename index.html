@@ -2,154 +2,249 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Card Pack Collector – New Game</title>
+<title>Card Pack Collector</title>
 
 <style>
+:root{
+  --bg:#070a1f;
+  --panel:#0f163d;
+  --panel2:#141d52;
+  --glow:#5ddcff;
+  --glow2:#c77dff;
+  --text:#eaf0ff;
+}
+
+*{box-sizing:border-box}
+
 body{
   margin:0;
-  font-family:'Segoe UI',sans-serif;
-  background:radial-gradient(circle at top,#121b44,#050812);
-  color:white;
+  font-family:'Segoe UI',system-ui,sans-serif;
+  background:
+    radial-gradient(circle at top,#141b5a,transparent 40%),
+    linear-gradient(180deg,#050817,#02030a);
+  color:var(--text);
 }
+
+/* TOP BAR */
 #top{
+  position:sticky;
+  top:0;
+  z-index:10;
   display:flex;
   justify-content:space-between;
-  padding:16px 20px;
-  background:#0e1530;
+  align-items:center;
+  padding:16px 26px;
+  background:linear-gradient(180deg,#0b1240,#070a1f);
+  border-bottom:1px solid rgba(255,255,255,.08);
 }
+#stats{
+  font-size:14px;
+  line-height:1.4;
+  letter-spacing:.3px;
+}
+
+/* BUTTONS */
 button{
-  padding:10px 18px;
+  padding:12px 22px;
   border:none;
-  border-radius:999px;
-  background:linear-gradient(135deg,#5ddcff,#c77dff);
-  color:black;
-  font-weight:800;
+  border-radius:14px;
+  background:
+    linear-gradient(135deg,var(--glow),var(--glow2));
+  color:#02030a;
+  font-weight:900;
   cursor:pointer;
+  box-shadow:0 0 18px rgba(93,220,255,.4);
+  transition:.2s;
 }
-.section{margin:26px}
-h2{margin-bottom:12px}
+button:hover{
+  transform:translateY(-2px) scale(1.03);
+  box-shadow:0 0 30px rgba(199,125,255,.6);
+}
+button:active{transform:scale(.97)}
+
+/* SECTIONS */
+.section{
+  margin:40px 28px;
+}
+.section h2{
+  margin-bottom:16px;
+  font-size:26px;
+  letter-spacing:1px;
+}
 
 /* SHOP */
 .shop{
-  display:flex;
-  gap:16px;
-  overflow-x:auto;
-}
-.pack{
-  min-width:200px;
-  padding:16px;
-  border-radius:20px;
-  background:#1b2a66;
-  text-align:center;
-}
-
-/* INVENTORY (BIG CARDS) */
-.inventory{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
   gap:20px;
 }
-.card{
-  background:#141c44;
+.pack{
+  padding:20px;
   border-radius:22px;
-  padding:10px;
+  background:
+    linear-gradient(180deg,var(--panel2),var(--panel));
+  text-align:center;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.06),
+    0 10px 30px rgba(0,0,0,.6);
+  transition:.2s;
+}
+.pack:hover{
+  transform:translateY(-6px);
+  box-shadow:
+    0 0 40px rgba(93,220,255,.4);
+}
+.pack h3{
+  margin:0 0 6px;
+  font-size:18px;
+}
+.pack p{
+  margin:0 0 12px;
+  opacity:.85;
+}
+
+/* INVENTORY */
+.inventory{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:22px;
+}
+.card{
+  background:
+    linear-gradient(180deg,#151e55,#0b1033);
+  border-radius:26px;
+  padding:12px;
   text-align:center;
   position:relative;
+  transition:.25s;
+}
+.card:hover{
+  transform:scale(1.05);
 }
 .card .art{
   height:240px;
-  border-radius:16px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:64px;
+  font-size:72px;
 }
-.card strong{display:block;margin-top:6px}
+.card strong{
+  display:block;
+  font-size:18px;
+}
 
-/* PACK OPEN (SMALL CARDS) */
-#overlay{
+/* RARITY GLOWS */
+.Common{box-shadow:0 0 16px #aaa}
+.Rare{box-shadow:0 0 20px #5ddcff}
+.Epic{box-shadow:0 0 28px #c77dff}
+.Legendary{box-shadow:0 0 36px orange}
+.Mythic{box-shadow:0 0 46px red}
+
+.badge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+}
+
+/* OVERLAYS */
+#overlay,#dailyArea{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.9);
+  background:rgba(2,3,10,.95);
   display:none;
   justify-content:center;
   align-items:center;
   flex-direction:column;
-  z-index:20;
+  z-index:30;
 }
+
+/* PACK OPEN */
 #reveal{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,120px);
-  gap:16px;
+  display:flex;
+  gap:18px;
+  flex-wrap:wrap;
+  justify-content:center;
 }
 .reveal-card{
-  background:#141c44;
-  border-radius:14px;
-  padding:8px;
+  background:var(--panel2);
+  border-radius:20px;
+  padding:10px;
+  width:140px;
   text-align:center;
+  animation:pop .4s ease;
 }
 .reveal-card .art{
   height:120px;
-  font-size:36px;
+  font-size:42px;
   display:flex;
   align-items:center;
   justify-content:center;
-  border-radius:10px;
+}
+@keyframes pop{
+  from{transform:scale(.6);opacity:0}
+  to{transform:scale(1);opacity:1}
 }
 
-/* RARITY */
-.Common{box-shadow:0 0 10px #aaa}
-.Rare{box-shadow:0 0 14px #5ddcff}
-.Epic{box-shadow:0 0 18px #c77dff}
-.Legendary{box-shadow:0 0 24px orange}
-.Mythic{box-shadow:0 0 30px red}
-
-.badge{
-  position:absolute;
-  top:10px;
-  right:10px;
-  padding:5px 10px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:900;
+/* DAILY */
+.daily-box{
+  background:
+    linear-gradient(180deg,var(--panel2),#080c28);
+  padding:36px;
+  border-radius:28px;
+  text-align:center;
+  width:360px;
+  box-shadow:0 0 60px rgba(93,220,255,.4);
 }
-.Common .badge{background:#aaa;color:black}
-.Rare .badge{background:#5ddcff;color:black}
-.Epic .badge{background:#c77dff;color:black}
-.Legendary .badge{background:orange;color:black}
-.Mythic .badge{background:red;color:white}
+.timer{
+  font-size:30px;
+  margin:14px 0;
+}
+.preview{
+  opacity:.7;
+  font-size:15px;
+}
 </style>
 </head>
 
 <body>
 
 <div id="top">
-  <div>
+  <div id="stats">
     💰 <span id="coins"></span> coins<br>
     🖱 <span id="cpc"></span> / click
   </div>
-  <button onclick="clickCoins()">CLICK</button>
+  <div>
+    <button onclick="openDaily()">🎁 DAILY</button>
+    <button onclick="clickCoins()">CLICK</button>
+  </div>
 </div>
 
 <div class="section">
-<h2>🛒 Packs</h2>
+<h2>🛒 Pack Shop</h2>
 <div class="shop">
-  <div class="pack"><h3>Starter</h3><p>25</p><button onclick="buyPack(25)">Open</button></div>
-  <div class="pack"><h3>Animal</h3><p>50</p><button onclick="buyPack(50)">Open</button></div>
-  <div class="pack"><h3>Hero</h3><p>150</p><button onclick="buyPack(150)">Open</button></div>
-  <div class="pack"><h3>Epic</h3><p>400</p><button onclick="buyPack(400)">Open</button></div>
-  <div class="pack"><h3>Legend</h3><p>900</p><button onclick="buyPack(900)">Open</button></div>
-  <div class="pack"><h3>Mythic</h3><p>2500</p><button onclick="buyPack(2500)">Open</button></div>
+  <div class="pack"><h3>Starter</h3><p>250</p><button onclick="buyPack(250)">Open</button></div>
+  <div class="pack"><h3>Animal</h3><p>500</p><button onclick="buyPack(500)">Open</button></div>
+  <div class="pack"><h3>Forest</h3><p>1,000</p><button onclick="buyPack(1000)">Open</button></div>
+  <div class="pack"><h3>Hero</h3><p>3,000</p><button onclick="buyPack(3000)">Open</button></div>
+  <div class="pack"><h3>Warrior</h3><p>7,500</p><button onclick="buyPack(7500)">Open</button></div>
+  <div class="pack"><h3>Epic</h3><p>15,000</p><button onclick="buyPack(15000)">Open</button></div>
+  <div class="pack"><h3>Legend</h3><p>40,000</p><button onclick="buyPack(40000)">Open</button></div>
+  <div class="pack"><h3>Legend+</h3><p>80,000</p><button onclick="buyPack(80000)">Open</button></div>
+  <div class="pack"><h3>Mythic</h3><p>200,000</p><button onclick="buyPack(200000)">Open</button></div>
 </div>
 </div>
 
 <div class="section">
-<h2>📘 Collection</h2>
+<h2>📘 Your Collection</h2>
 <div class="inventory" id="inventory"></div>
 </div>
 
 <div class="section">
-<h2>🏆 Leaderboard</h2>
+<h2>🏆 Best Card</h2>
 <p id="leaderboard"></p>
 </div>
 
@@ -159,20 +254,26 @@ h2{margin-bottom:12px}
   <button onclick="overlay.style.display='none'">DONE</button>
 </div>
 
+<div id="dailyArea">
+  <div class="daily-box">
+    <h2>🎁 Daily Reward</h2>
+    <div class="timer" id="dailyTimer"></div>
+    <div id="todayReward"></div>
+    <div class="preview" id="tomorrowReward"></div>
+    <button id="claimDailyBtn" onclick="claimDaily()">CLAIM</button>
+    <button onclick="dailyArea.style.display='none'">CLOSE</button>
+  </div>
+</div>
+
 <script>
-/* 🔥 NEW GAME STORAGE KEYS 🔥 */
-const COIN_KEY = "NEWGAME_coins";
-const INV_KEY  = "NEWGAME_inventory";
+/* SAVE */
+const COIN_KEY="UI_coins";
+const INV_KEY="UI_inv";
+const DAILY_TIME="UI_daily_time";
+const DAILY_DAY="UI_daily_day";
 
-/* FORCE FRESH START */
-if (!localStorage.getItem("NEWGAME_initialized")) {
-  localStorage.setItem("NEWGAME_initialized","yes");
-  localStorage.removeItem(COIN_KEY);
-  localStorage.removeItem(INV_KEY);
-}
-
-let coins = +localStorage.getItem(COIN_KEY) || 200;
-let inv = JSON.parse(localStorage.getItem(INV_KEY)) || {};
+let coins=+localStorage.getItem(COIN_KEY)||20;
+let inv=JSON.parse(localStorage.getItem(INV_KEY))||{};
 
 const rarityPower={Common:1,Rare:3,Epic:7,Legendary:15,Mythic:30};
 
@@ -180,62 +281,106 @@ const cards=[
 {name:"Cat",rarity:"Common",icon:"🐱"},
 {name:"Dog",rarity:"Common",icon:"🐶"},
 {name:"Fox",rarity:"Common",icon:"🦊"},
+{name:"Rabbit",rarity:"Common",icon:"🐰"},
+{name:"Frog",rarity:"Common",icon:"🐸"},
+{name:"Panda",rarity:"Common",icon:"🐼"},
 {name:"Bear",rarity:"Rare",icon:"🐻"},
 {name:"Lion",rarity:"Rare",icon:"🦁"},
 {name:"Wolf",rarity:"Rare",icon:"🐺"},
+{name:"Tiger",rarity:"Rare",icon:"🐯"},
+{name:"Eagle",rarity:"Rare",icon:"🦅"},
+{name:"Crocodile",rarity:"Rare",icon:"🐊"},
 {name:"Knight",rarity:"Epic",icon:"🛡️"},
 {name:"Wizard",rarity:"Epic",icon:"🧙"},
 {name:"Archer",rarity:"Epic",icon:"🏹"},
+{name:"Viking",rarity:"Epic",icon:"🪓"},
+{name:"Samurai",rarity:"Epic",icon:"🗡️"},
+{name:"Paladin",rarity:"Epic",icon:"⚔️"},
 {name:"Ninja",rarity:"Legendary",icon:"🥷"},
 {name:"Robot",rarity:"Legendary",icon:"🤖"},
+{name:"Assassin",rarity:"Legendary",icon:"🗡️"},
+{name:"Mech",rarity:"Legendary",icon:"⚙️"},
+{name:"Dark Wizard",rarity:"Legendary",icon:"🧿"},
 {name:"Dragon",rarity:"Mythic",icon:"🐉"},
 {name:"Phoenix",rarity:"Mythic",icon:"🔥"},
 {name:"Unicorn",rarity:"Mythic",icon:"🦄"},
-{name:"Cosmic God",rarity:"Mythic",icon:"🌌"}
+{name:"Cosmic God",rarity:"Mythic",icon:"🌌"},
+{name:"Thunder God",rarity:"Mythic",icon:"⚡"},
+{name:"Sea Leviathan",rarity:"Mythic",icon:"🌊"},
+{name:"Sun Titan",rarity:"Mythic",icon:"☀️"}
 ];
 
-function bestPower(){
-  let b=0;
-  for(let k in inv)b=Math.max(b,rarityPower[inv[k].rarity]);
-  return b;
-}
-function coinsPerClick(){return Math.max(5,5+bestPower()*2);}
-function clickCoins(){coins+=coinsPerClick();render();}
+const dailyRewards=[
+{type:"coins",value:25000,label:"+25,000 Coins"},
+{type:"pack",value:15000,label:"Epic Pack"},
+{type:"coins",value:50000,label:"+50,000 Coins"},
+{type:"pack",value:40000,label:"Legend Pack"},
+{type:"coins",value:100000,label:"+100,000 Coins"},
+{type:"pack",value:80000,label:"Legend+ Pack"},
+{type:"pack",value:200000,label:"Mythic Pack"}
+];
 
-function buyPack(cost){
-  if(coins<cost)return alert("Not enough coins!");
-  coins-=cost;
-  openPack(cost);
+function coinsPerClick(){
+  let p=5;
+  for(let k in inv)p+=rarityPower[inv[k].rarity]*inv[k].count;
+  return p;
 }
+
+function clickCoins(){coins+=coinsPerClick();render();}
+function buyPack(c){if(coins<c)return alert("Not enough coins!");coins-=c;openPack(c);}
 
 function roll(cost){
   let r=Math.random()*100;
-  if(cost>=2500 && r<40)return cards.filter(c=>c.rarity==="Mythic")[Math.floor(Math.random()*5)];
-  if(cost>=900 && r<30)return cards.filter(c=>c.rarity==="Legendary")[Math.floor(Math.random()*2)];
-  if(r<40)return cards.filter(c=>c.rarity==="Common")[Math.floor(Math.random()*3)];
-  if(r<70)return cards.filter(c=>c.rarity==="Rare")[Math.floor(Math.random()*3)];
-  if(r<90)return cards.filter(c=>c.rarity==="Epic")[Math.floor(Math.random()*3)];
+  if(cost>=200000&&r<40)return cards.filter(c=>c.rarity==="Mythic")[Math.floor(Math.random()*7)];
+  if(cost>=80000&&r<35)return cards.filter(c=>c.rarity==="Legendary")[Math.floor(Math.random()*5)];
+  if(cost>=40000&&r<30)return cards.filter(c=>c.rarity==="Legendary")[Math.floor(Math.random()*5)];
+  if(r<40)return cards.filter(c=>c.rarity==="Common")[Math.floor(Math.random()*6)];
+  if(r<70)return cards.filter(c=>c.rarity==="Rare")[Math.floor(Math.random()*6)];
+  if(r<90)return cards.filter(c=>c.rarity==="Epic")[Math.floor(Math.random()*6)];
   return cards.filter(c=>c.rarity==="Legendary")[0];
 }
 
 function openPack(cost){
   overlay.style.display="flex";
   reveal.innerHTML="";
-  let pulls=cost<100?3:cost<500?4:5;
-
+  let pulls=cost<1000?3:cost<5000?4:5;
   setTimeout(()=>{
     for(let i=0;i<pulls;i++){
       let c=roll(cost);
       if(!inv[c.name])inv[c.name]={...c,count:0};
       inv[c.name].count++;
-
-      let d=document.createElement("div");
-      d.className="reveal-card "+c.rarity;
-      d.innerHTML=`<div class="art">${c.icon}</div><strong>${c.name}</strong>`;
-      reveal.appendChild(d);
+      reveal.innerHTML+=`<div class="reveal-card ${c.rarity}"><div class="art">${c.icon}</div><strong>${c.name}</strong></div>`;
     }
     render();
-  },600);
+  },400);
+}
+
+let dailyInterval;
+function openDaily(){dailyArea.style.display="flex";updateDaily();dailyInterval=setInterval(updateDaily,1000);}
+function updateDaily(){
+  let last=+localStorage.getItem(DAILY_TIME)||0;
+  let diff=86400000-(Date.now()-last);
+  let day=+localStorage.getItem(DAILY_DAY)||0;
+  let today=dailyRewards[day%dailyRewards.length];
+  let tomorrow=dailyRewards[(day+1)%dailyRewards.length];
+  todayReward.textContent="Today: "+today.label;
+  tomorrowReward.textContent="Tomorrow: "+tomorrow.label;
+  if(diff<=0){dailyTimer.textContent="READY!";claimDailyBtn.style.display="block";}
+  else{
+    let h=Math.floor(diff/3600000),m=Math.floor(diff%3600000/60000),s=Math.floor(diff%60000/1000);
+    dailyTimer.textContent=`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+    claimDailyBtn.style.display="none";
+  }
+}
+function claimDaily(){
+  let day=+localStorage.getItem(DAILY_DAY)||0;
+  let r=dailyRewards[day%dailyRewards.length];
+  if(r.type==="coins")coins+=r.value;else openPack(r.value);
+  localStorage.setItem(DAILY_TIME,Date.now());
+  localStorage.setItem(DAILY_DAY,day+1);
+  dailyArea.style.display="none";
+  clearInterval(dailyInterval);
+  render();
 }
 
 function render(){
@@ -243,16 +388,11 @@ function render(){
   cpcEl.textContent=coinsPerClick();
   inventory.innerHTML="";
   let best="None",bestVal=0;
-
   for(let k in inv){
     let c=inv[k];
-    let d=document.createElement("div");
-    d.className="card "+c.rarity;
-    d.innerHTML=`<span class="badge">${c.rarity}</span><div class="art">${c.icon}</div><strong>${k}</strong><br>x${c.count}`;
-    inventory.appendChild(d);
+    inventory.innerHTML+=`<div class="card ${c.rarity}"><span class="badge">${c.rarity}</span><div class="art">${c.icon}</div><strong>${k}</strong><br>x${c.count}</div>`;
     if(rarityPower[c.rarity]>bestVal){bestVal=rarityPower[c.rarity];best=k;}
   }
-
   leaderboard.textContent=`Best Card: ${best}`;
   localStorage.setItem(COIN_KEY,coins);
   localStorage.setItem(INV_KEY,JSON.stringify(inv));
@@ -264,6 +404,11 @@ const inventory=document.getElementById("inventory");
 const leaderboard=document.getElementById("leaderboard");
 const overlay=document.getElementById("overlay");
 const reveal=document.getElementById("reveal");
+const dailyArea=document.getElementById("dailyArea");
+const dailyTimer=document.getElementById("dailyTimer");
+const todayReward=document.getElementById("todayReward");
+const tomorrowReward=document.getElementById("tomorrowReward");
+const claimDailyBtn=document.getElementById("claimDailyBtn");
 
 render();
 </script>
